@@ -1,0 +1,10 @@
+AWS                 51.28       Tech
+Adidas              55          Footware
+Apple               35.49       Tech
+Walmart             50          Retail
+BMW                 81.33       Auto
+Amazon              41.5        E-Commerce
+Porsche             66.0        Auto
+MicroSoft           27.55       Tech
+Flipkart            24.1        E-Commerce
+Rebook              14          Footware

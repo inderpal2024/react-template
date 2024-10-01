@@ -1,0 +1,32 @@
+Output a self-contained .jsx React+Tailwind+Shadcn app that accomplishes the following task:
+
+<task>
+Create an app that consists of a form at the top, followed by a heading "SECTORS" and sub headings under shares heading.
+The app has following features: -
+1. In the app, a user can create a stock by providing stock name, initial price and sector in the form at the top.
+2. After a stock is created, if there is no sub heading with its sector's name, then this sub heading is created and the stock is shown.
+3. Stocks are shown as unordered list items below corresponding heading. Each list item initially has a black border and contains stock name, followed by its price and percentage change. List item does not have any marker or dot at the start and percentage change is initially 0. Width of name should be atleast 200px, price should be atleast 250 px wide. The values in a row should be aligned with the values in another row.
+4. The sub headings acts as accordion and can be clicked to expand or collapse a sub heading to show stocks below it. When a subheading is that is already expanded is clicked, it is collapsed. if it was collapsed before click, it is expanded and all others are collapsed.
+5. If value entered in initial price is less than 0 or greater than 100, initial price field should be marked invalid with red border and the submit button should be disabled. In such case, the corresponding error should be shown.
+6. If user tries to add a stock with same name as a previously added stock, submit button is disabled and a stock name is marked invalid and an error message is shown for the field.
+7. When any field in the form is changed, the error message on that field is removed and if the submit button is disabled and no field currently has an error message, it is re-enabled.
+
+Styling instructions: -
+1. The stock name, initial price and sector should be aligned across rows.
+2. Price should always have 2 digits after decimal. If price has less than 2 digits, add zeroes so that there are 2 digits after decimal. Price value should be displayed with $ sign before it.
+3. If percent change is less than 0, it is coloured red and the border or corresponding row is also red, if its greater than 0, border will be green and it is also green. If percentage change is 0, it and the border both are green. Percentage change is also shown with 2 digits after the decimal like price, but it has % sign after it instead. Also, negative values of percent are shown without a - sign and with brackets around it.
+4. For a large screen, all fields should be in a single row, but for a medium or smaller screen, each input should be full width.
+
+Updating the percentage change: -
+Percentage change is randomly calculated each 4 seconds and updated. Calculation of percentage change is done by first selecting a random integer from 1 to 40 and then dividing it by 4 and then substracting 5 from the result.
+</task>
+
+Make sure to use React in your response. You may use components from Shadcn using “@/components” like so: import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"; You are not allowed to use any other dependencies or external assets.
+
+You can define multiple sub-components if necessary, but export the final app as a default function component (export default function App()...).
+
+Use modern React idioms like hooks.
+Use Tailwind for styling.
+Use prettier formatting (2-space tab width, semicolons, etc).
+Ensure mobile responsiveness; the app should work with the sm breakpoint in tailwind.
+Restrict your output to around 500 lines.
