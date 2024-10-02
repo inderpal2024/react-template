@@ -1,0 +1,15 @@
+Output a self-contained .jsx React+Tailwind+Shadcn app that accomplishes the following task:
+
+<task>
+
+</task>
+
+Make sure to use React in your response. You may use components from Shadcn using “@/components” like so: import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"; You are not allowed to use any other dependencies or external assets.
+
+You can define multiple sub-components if necessary, but export the final app as a default function component (export default function App()...).
+
+Use modern React idioms like hooks.
+Use Tailwind for styling.
+Use prettier formatting (2-space tab width, semicolons, etc).
+Ensure mobile responsiveness; the app should work with the sm breakpoint in tailwind.
+Restrict your output to around 500 lines.

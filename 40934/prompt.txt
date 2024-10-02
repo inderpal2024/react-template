@@ -1,0 +1,42 @@
+Output a self-contained .jsx React+Tailwind+Shadcn app that accomplishes the following task:
+
+<task>
+Create a digital watch. At the top of digital watch there should be a toggle button with 2 options: watch, stopwatch. Use box shadows in this toggle for UI accessibility. So the watch has 2 modes corresponding to each of the 2 options.
+
+So, the UI will have 4 regions: -
+1. at the top will be 2 options to select between the 2 modes.
+2. In the middle there will be the region where time or stopwatch timer is displayed, called clock region.
+3. Below it is the region where controls for current mode are shown, called control region.
+4. finally there is the region where information related to the current mode is displayed, called info region.
+
+Clock region, control region and info region correspond to the clock mode selected.
+Timer of the watch should have shadows for a 3d effect.
+
+Following are the features of each mode.
+
+Watch mode: -
+1. In watch mode, the clock shows time in 12 hours format by default along with AM and PM in the clock region.
+2. In the controls below, there should be toggle button to change watch to 24 hours format.
+3. Also, there should be an input in the controls where one can input time value in hh:mm:ss and an add alarm button. If time format is in 12 hours format, there should be an AM / PM dropdown besides time input. Default value of AM / PM dropdown should correspond to current time. The hh:mm:ss field along with AM / PM dropdown (in case of 12 hour format) constitute the alarm time. Only if alarm time is valid, the add alarm button should be enabled.
+4. When user clicks the add alarm button, if its enabled, an entry should be made with time value from the form in currently selected format in the info region and the inputs should be cleared and submit button disabled again.
+5. The info region for watch mode will consist of a list of these enteries sorted by the corresponding time value. Duplicate entries are not allowed. If a duplicate time is entered, the add alarm button shouuld remain disabled.
+6. Each entry row will consist of time displayed in current format (selected using toggle button in control region) in the far left and a toggle button in the far right. If toggle button is on and the time in the clock has not passed, the row should have a green shadow. Otherwise shadow around the row should be grey.
+7. When time in one of the rows is reached, if it is disabled, nothing happens, otherwise, the clock along with the row will have a yellow blinking shadow with a frequency of 2 times a second until 10 seconds have passed or the clock region is clicked. After which it becomes normal.
+
+Stopwatch mode: -
+1. It has a watch which shows time in hh:mm:ss in 24 hours format only.
+2. Stopwatch is either running or paused or stopped. When its stopped, the time is always 00:00:00 and below in the control region, there is only start button.
+3. When start button is clicked, the watch starts running and time starts. When watch is running, start button changes to stop and a pause button and split button appear in the control region.
+4. When pause button is clicked, the stopwatch is paused and the pause button changes to resume button. Clicking resume button resumes the watch and the resume button changes back to pause button.
+5. When stop button is clicked the watch is stopped and time is set back to 00:00:00.
+</task>
+
+Make sure to use React in your response. You may use components from Shadcn using “@/components” like so: import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"; You are not allowed to use any other dependencies or external assets.
+
+You can define multiple sub-components if necessary, but export the final app as a default function component (export default function App()...).
+
+Use modern React idioms like hooks.
+Use Tailwind for styling.
+Use prettier formatting (2-space tab width, semicolons, etc).
+Ensure mobile responsiveness; the app should work with the sm breakpoint in tailwind.
+Restrict your output to around 500 lines.
