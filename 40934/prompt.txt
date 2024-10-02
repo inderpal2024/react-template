@@ -1,10 +1,10 @@
 Output a self-contained .jsx React+Tailwind+Shadcn app that accomplishes the following task:
 
 <task>
-Create a digital watch. At the top of digital watch there should be a toggle button with 2 options: watch, stopwatch. Use box shadows in this toggle for UI accessibility. So the watch has 2 modes corresponding to each of the 2 options.
+Create a digital watch. At the top of digital watch there should be 2 tabs: watch, stopwatch. So the watch has 2 modes corresponding to each of the 2 tabs.
 
 So, the UI will have 4 regions: -
-1. at the top will be 2 options to select between the 2 modes.
+1. at the top will be 2 tabs to select between the 2 modes.
 2. In the middle there will be the region where time or stopwatch timer is displayed, called clock region.
 3. Below it is the region where controls for current mode are shown, called control region.
 4. finally there is the region where information related to the current mode is displayed, called info region.
@@ -15,13 +15,13 @@ Timer of the watch should have shadows for a 3d effect.
 Following are the features of each mode.
 
 Watch mode: -
-1. In watch mode, the clock shows time in 12 hours format by default along with AM and PM in the clock region.
+1. In watch mode, the user is able to toggle between 1200 hours and 2400 hours format using a tab group. By default, 1200 hours format is selected.
 2. In the controls below, there should be toggle button to change watch to 24 hours format.
-3. Also, there should be an input in the controls where one can input time value in hh:mm:ss and an add alarm button. If time format is in 12 hours format, there should be an AM / PM dropdown besides time input. Default value of AM / PM dropdown should correspond to current time. The hh:mm:ss field along with AM / PM dropdown (in case of 12 hour format) constitute the alarm time. Only if alarm time is valid, the add alarm button should be enabled.
+3. Also, there should be an input in the controls where one can input time value in hh:mm:ss and an add alarm button. If time format is in 12 hours format, there should be an AM / PM dropdown besides time input. Default value of AM / PM dropdown should be PM. The hh:mm:ss field along with AM / PM dropdown (in case of 12 hour format) constitute the alarm time. Only if alarm time is valid, the add alarm button should be enabled.
 4. When user clicks the add alarm button, if its enabled, an entry should be made with time value from the form in currently selected format in the info region and the inputs should be cleared and submit button disabled again.
 5. The info region for watch mode will consist of a list of these enteries sorted by the corresponding time value. Duplicate entries are not allowed. If a duplicate time is entered, the add alarm button shouuld remain disabled.
-6. Each entry row will consist of time displayed in current format (selected using toggle button in control region) in the far left and a toggle button in the far right. If toggle button is on and the time in the clock has not passed, the row should have a green shadow. Otherwise shadow around the row should be grey.
-7. When time in one of the rows is reached, if it is disabled, nothing happens, otherwise, the clock along with the row will have a yellow blinking shadow with a frequency of 2 times a second until 10 seconds have passed or the clock region is clicked. After which it becomes normal.
+6. Each entry row will consist of time displayed in current format (selected using toggle button in control region) in the far left and a toggle button in the far right. If toggle button is on row should have a green shadow. Otherwise shadow around the row should be grey.
+7. When time in one of the rows is reached, if it is enabled and currently watch mode is on, the clock along with the row will have a yellow blinking shadow with a frequency of 2 times a second until 10 seconds have passed or until the clock region is clicked. After which it becomes normal.
 
 Stopwatch mode: -
 1. It has a watch which shows time in hh:mm:ss in 24 hours format only.

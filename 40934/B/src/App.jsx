@@ -1,150 +1,122 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Button, Toggle, Input, Select, SelectItem } from "@/components/ui";
+import React, { useState, useEffect, useRef } from 'react';
+import { Button, Input, Toggle, Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
-// Component for displaying time
-function TimeDisplay({ time, format24 }) {
-  const displayTime = format24 ? time : time.toLocaleTimeString('en-US', { hour12: !format24 });
-  return <div className="text-4xl text-center mb-4 shadow-3d">{displayTime}</div>;
-}
-
-// Component for Alarm Entry
-function AlarmEntry({ alarm, onToggle, isCurrentTime, isActive }) {
-  const shadowColor = isActive ? (isCurrentTime ? 'yellow' : 'green') : 'gray';
-  return (
-    <div className={`p-2 my-1 rounded shadow-md ${cn('shadow-' + shadowColor)}`}>
-      <span>{alarm.time}</span>
-      <Toggle onToggle={() => onToggle(alarm.id)} enabled={isActive} />
-    </div>
-  );
-}
-
-// Main App Component
-export default function App() {
+function App() {
   const [mode, setMode] = useState('watch');
-  const [time, setTime] = useState(new Date());
-  const [format24, setFormat24] = useState(false);
+  const [format, setFormat] = useState('12');
   const [alarms, setAlarms] = useState([]);
-  const [newAlarm, setNewAlarm] = useState({ time: '', period: time.getHours() >= 12 ? 'PM' : 'AM' });
-  const [stopwatch, setStopwatch] = useState({ running: false, time: 0, laps: [] });
-  const [blink, setBlink] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [stopwatchTime, setStopwatchTime] = useState(0);
+  const [isStopwatchRunning, setIsStopwatchRunning] = useState(false);
+  const intervalRef = useRef(null);
 
-  // Clock ticking
+  // Time formatting function
+  const formatTime = (time, timeFormat = format) => {
+    let hours = time.getHours();
+    let suffix = 'AM';
+    if (timeFormat === '24') {
+      return time.toTimeString().split(' ')[0];
+    } else {
+      if (hours >= 12) {
+        suffix = 'PM';
+        hours -= 12;
+      }
+      if (hours === 0) hours = 12;
+      return `${hours}:${time.getMinutes().toString().padStart(2, '0')}:${time.getSeconds().toString().padStart(2, '0')} ${suffix}`;
+    }
+  };
+
+  // Handle alarm setting
+  const [alarmTime, setAlarmTime] = useState({ hours: '', minutes: '', seconds: '', period: 'PM' });
+  const isValidTime = (h, m, s) => h < (format === '12' ? 13 : 24) && m < 60 && s < 60;
+  
+  const canAddAlarm = () => {
+    const { hours, minutes, seconds } = alarmTime;
+    return isValidTime(hours, minutes, seconds) && !alarms.some(a => formatTime(a.time) === formatTime(new Date(`2000-01-01T${hours}:${minutes}:${seconds}${alarmTime.period}`)));
+  };
+
+  const addAlarm = () => {
+    if (canAddAlarm()) {
+      const newAlarm = new Date(`2000-01-01T${alarmTime.hours}:${alarmTime.minutes}:${alarmTime.seconds}${alarmTime.period}`);
+      setAlarms([...alarms, { time: newAlarm, active: false }].sort((a, b) => a.time - b.time));
+      setAlarmTime({ hours: '', minutes: '', seconds: '', period: 'PM' });
+    }
+  };
+
+  // Stopwatch functions
   useEffect(() => {
-    const timerID = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(timerID);
+    if (isStopwatchRunning) {
+      intervalRef.current = setInterval(() => setStopwatchTime(prevTime => prevTime + 1000), 1000);
+    } else {
+      clearInterval(intervalRef.current);
+    }
+    return () => clearInterval(intervalRef.current);
+  }, [isStopwatchRunning]);
+
+  const startStopwatch = () => setIsStopwatchRunning(true);
+  const stopStopwatch = () => setIsStopwatchRunning(false);
+  const resetStopwatch = () => setStopwatchTime(0);
+
+  // Clock update
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
   }, []);
 
-  // Stopwatch functionality
-  useEffect(() => {
-    let interval = null;
-    if (stopwatch.running) {
-      interval = setInterval(() => {
-        setStopwatch(prev => ({...prev, time: prev.time + 1000}));
-      }, 1000);
-    } else if (interval) {
-      clearInterval(interval);
-    }
-    return () => clearInterval(interval);
-  }, [stopwatch.running]);
-
-  // Alarm check
-  useEffect(() => {
-    const checkAlarms = () => {
-      const currentTime = time.toTimeString().split(' ')[0];
-      alarms.forEach(alarm => {
-        if (alarm.time === currentTime && alarm.active) {
-          setBlink(true);
-          setTimeout(() => setBlink(false), 10000);
-        }
-      });
-    };
-    checkAlarms();
-  }, [time, alarms]);
-
-  const toggleMode = () => setMode(prev => prev === 'watch' ? 'stopwatch' : 'watch');
-  
-  // Alarm functions
-  const addAlarm = () => {
-    if (newAlarm.time && !alarms.some(a => a.time === newAlarm.time)) {
-      setAlarms([...alarms, { id: Date.now(), time: newAlarm.time, active: true }]);
-      setNewAlarm({ time: '', period: 'AM' });
-    }
-  };
-
-  const toggleAlarm = (id) => {
-    setAlarms(alarms.map(alarm => 
-      alarm.id === id ? { ...alarm, active: !alarm.active } : alarm
-    ));
-  };
-
-  // Stopwatch controls
-  const startStopwatch = () => setStopwatch({...stopwatch, running: true});
-  const stopStopwatch = () => setStopwatch({...stopwatch, running: false, time: 0});
-  const pauseResumeStopwatch = () => setStopwatch(prev => ({...prev, running: !prev.running}));
-  const splitTime = () => setStopwatch(prev => ({...prev, laps: [...prev.laps, prev.time]}));
-
   return (
-    <div className="container mx-auto p-4">
-      <Toggle 
-        options={[{value: 'watch', label: 'Watch'}, {value: 'stopwatch', label: 'Stopwatch'}]} 
-        value={mode} 
-        onChange={toggleMode} 
-        className="mb-4 shadow-md"
-      />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="text-center">
-          {mode === 'watch' ? (
-            <>
-              <TimeDisplay time={time} format24={format24} />
-              <div>
-                <Toggle onToggle={() => setFormat24(!format24)} enabled={format24}>24hr</Toggle>
-                <Input 
-                  value={newAlarm.time} 
-                  onChange={(e) => setNewAlarm({...newAlarm, time: e.target.value})} 
-                  placeholder="HH:MM:SS" 
-                />
-                { !format24 && 
-                  <Select value={newAlarm.period} onChange={(val) => setNewAlarm({...newAlarm, period: val})}>
-                    <SelectItem value="AM">AM</SelectItem>
-                    <SelectItem value="PM">PM</SelectItem>
-                  </Select>
-                }
-                <Button disabled={!newAlarm.time} onClick={addAlarm}>Add Alarm</Button>
+    <div className="flex flex-col items-center p-4 sm:p-8">
+      <Tabs defaultValue="watch" className="w-full max-w-lg">
+        <TabsList>
+          <TabsTrigger value="watch">Watch</TabsTrigger>
+          <TabsTrigger value="stopwatch">Stopwatch</TabsTrigger>
+        </TabsList>
+        <TabsContent value="watch">
+          <div className="text-4xl my-4 shadow-lg shadow-indigo-500/50">{formatTime(currentTime)}</div>
+          <div className="flex flex-col space-y-2">
+            <Toggle onToggle={() => setFormat(format === '12' ? '24' : '12')}>24 Hour Format</Toggle>
+            <div className="flex items-center">
+              <Input type="number" placeholder="HH" value={alarmTime.hours} onChange={(e) => setAlarmTime({...alarmTime, hours: e.target.value})} />
+              <span className="mx-2">:</span>
+              <Input type="number" placeholder="MM" value={alarmTime.minutes} onChange={(e) => setAlarmTime({...alarmTime, minutes: e.target.value})} />
+              <span className="mx-2">:</span>
+              <Input type="number" placeholder="SS" value={alarmTime.seconds} onChange={(e) => setAlarmTime({...alarmTime, seconds: e.target.value})} />
+              {format === '12' && (
+                <select value={alarmTime.period} onChange={(e) => setAlarmTime({...alarmTime, period: e.target.value})}>
+                  <option>AM</option>
+                  <option>PM</option>
+                </select>
+              )}
+              <Button disabled={!canAddAlarm()} onClick={addAlarm}>Add Alarm</Button>
+            </div>
+          </div>
+          <div className="mt-4">
+            {alarms.map((alarm, idx) => (
+              <div key={idx} className={cn("p-2 my-1 rounded", alarm.active ? "shadow-green-500" : "shadow-gray-400")}>
+                {formatTime(alarm.time, format)}
+                <Toggle onToggle={() => {
+                  let newAlarms = [...alarms];
+                  newAlarms[idx].active = !alarm.active;
+                  setAlarms(newAlarms);
+                }} />
               </div>
-            </>
-          ) : (
-            <>
-              <TimeDisplay time={new Date(stopwatch.time)} format24={true} />
-              {stopwatch.time === 0 ? 
-                <Button onClick={startStopwatch}>Start</Button> :
-                <>
-                  <Button onClick={stopStopwatch}>Stop</Button>
-                  <Button onClick={pauseResumeStopwatch}>{stopwatch.running ? 'Pause' : 'Resume'}</Button>
-                  <Button onClick={splitTime}>Split</Button>
-                </>
-              }
-            </>
-          )}
-        </div>
-        <div className="info-region">
-          {mode === 'watch' ? 
-            alarms.map(alarm => (
-              <AlarmEntry 
-                key={alarm.id} 
-                alarm={alarm} 
-                onToggle={toggleAlarm} 
-                isCurrentTime={alarm.time === time.toTimeString().split(' ')[0]}
-                isActive={alarm.active}
-              />
-            )) :
-            stopwatch.laps.map((lap, index) => 
-              <div key={index}>{new Date(lap).toISOString().substr(11, 8)}</div>
-            )
-          }
-        </div>
-      </div>
-      {blink && <div className="blink-overlay" onClick={() => setBlink(false)}></div>}
+            ))}
+          </div>
+        </TabsContent>
+        <TabsContent value="stopwatch">
+          <div className="text-4xl my-4">{new Date(stopwatchTime).toISOString().substr(11, 8)}</div>
+          <div>
+            {!isStopwatchRunning ? 
+              <Button onClick={startStopwatch}>Start</Button> : 
+              <>
+                <Button onClick={stopStopwatch}>Stop</Button>
+                <Button onClick={resetStopwatch}>Reset</Button>
+              </>}
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
+
+export default App;
